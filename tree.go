@@ -14,6 +14,7 @@ type XmlElement struct {
 }
 
 var ErrUnbalancedXml = errors.New("unbalanced xml")
+var ErrUnsupportedXml = errors.New("unsupported xml")
 
 func BuildTree(s string) (XmlElement, error) {
 
@@ -42,17 +43,14 @@ func BuildTree(s string) (XmlElement, error) {
 		case xml.CharData:
 			stack[len(stack)-1].Text += strings.TrimSpace(string(v))
 		case xml.Comment:
-			// ignore comments
 		case xml.ProcInst:
-			// ignore instructions
 		case xml.Directive:
-			// ignore directives
 		default:
-			return XmlElement{}, ErrUnbalancedXml
+			return XmlElement{}, ErrUnsupportedXml
 		}
 	}
 	if len(stack) != 1 {
-		panic("Unbalanced xml")
+		return XmlElement{}, ErrUnbalancedXml
 	}
 	return stack[0], nil
 }

@@ -2,6 +2,7 @@ package xmlpp
 
 import (
 	"encoding/xml"
+	"errors"
 	"io"
 	"strings"
 )
@@ -11,6 +12,8 @@ type XmlElement struct {
 	Children []XmlElement
 	Text     string
 }
+
+var ErrUnbalancedXml = errors.New("unbalanced xml")
 
 func BuildTree(s string) (XmlElement, error) {
 
@@ -45,7 +48,7 @@ func BuildTree(s string) (XmlElement, error) {
 		case xml.Directive:
 			// ignore directives
 		default:
-			panic("Unsupported xml")
+			return XmlElement{}, ErrUnbalancedXml
 		}
 	}
 	if len(stack) != 1 {
